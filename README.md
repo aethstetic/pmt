@@ -20,6 +20,7 @@ Downgrading to cached version
 PKGBUILD diff review against previously reviewed version
 Split package support via pkgbase
 Auto-scrolling build log with elapsed timer
+Lightweight binary at only 535kb
 ```
 
 # Information 
