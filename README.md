@@ -6,7 +6,7 @@ What is pmt?
 # Installation
 ```
 sudo pacman -S --needed base-devel
-git clone https://github.com/aethstetic/pmt.git                                                                                                                                                                                            
+git clone https://aur.archlinux.org/pmt-git.git                                                                                                                                
 cd pmt                                          
 makepkg -si  
 ```
