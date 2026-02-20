@@ -31,3 +31,6 @@ Pressing tab will switch between the standard pacman repo and aur.
 pmt also features a few customization arguments such as: 
 `--disable-color`
 `--accent "#d3bd97"`
+
+# Showcase 
+![Showcase of TUI](showcase.png)
