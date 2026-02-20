@@ -485,9 +485,9 @@ bool UI::draw_confirm_dialog(const std::string& title, const std::vector<std::st
         } else {
             term_.write(Terminal::dim());
         }
-        term_.write("  yes  ");
+        term_.write(" yes ");
         term_.write(Terminal::reset());
-        term_.write("  ");
+        term_.write(" ");
         if (!selected_yes) {
             term_.write(accent_fg());
             term_.write(Terminal::bold());
@@ -495,7 +495,7 @@ bool UI::draw_confirm_dialog(const std::string& title, const std::vector<std::st
         } else {
             term_.write(Terminal::dim());
         }
-        term_.write("  no  ");
+        term_.write(" no ");
         term_.write(Terminal::reset());
         term_.hide_cursor();
         term_.flush();
