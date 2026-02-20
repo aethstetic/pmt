@@ -194,10 +194,12 @@ void UI::draw_package_list(const std::vector<PackageInfo>& packages) {
         bool is_selected = (idx == selected && focus != Focus::SearchBar);
 
         if (is_selected) {
+            term_.write(accent_fg());
             term_.write(Terminal::reverse_video());
             term_.write(Terminal::bold());
             term_.write(std::string(lw - 1, ' '));
             term_.move_to(row, 0);
+            term_.write(accent_fg());
             term_.write(Terminal::reverse_video());
             term_.write(Terminal::bold());
         }
@@ -218,7 +220,8 @@ void UI::draw_package_list(const std::vector<PackageInfo>& packages) {
         int ver_space = name_max - 3 - name_used;
         if (ver_space > 2) {
             term_.write(" ");
-            term_.write(color_fg(C::BrightBlack));
+            term_.write(is_selected ? "" : accent_fg());
+            term_.write(Terminal::dim());
             term_.write_truncated(pkg.version, ver_space);
         }
 
@@ -397,7 +400,7 @@ void UI::draw_status_bar(const std::vector<PackageInfo>& packages) {
         }
     } else if (!status_message.empty()) {
         term_.write(" ");
-        term_.write(color_fg(C::Yellow));
+        term_.write(accent_fg());
         term_.write(status_message);
     } else {
         static constexpr struct { const char* key; const char* label; } hints[] = {
@@ -457,7 +460,7 @@ bool UI::draw_confirm_dialog(const std::string& title, const std::vector<std::st
 
     term_.move_to(start_row + 1, start_col + 2);
     term_.write(Terminal::bold());
-    term_.write(color_fg(C::Yellow));
+    term_.write(accent_fg());
     term_.write_truncated(title, w - 4);
     term_.write(Terminal::reset());
 
@@ -476,21 +479,23 @@ bool UI::draw_confirm_dialog(const std::string& title, const std::vector<std::st
         term_.move_to(btn_row, start_col + 2);
 
         if (selected_yes) {
+            term_.write(accent_fg());
             term_.write(Terminal::bold());
             term_.write(Terminal::reverse_video());
         } else {
             term_.write(Terminal::dim());
         }
-        term_.write("  Yes  ");
+        term_.write("  yes  ");
         term_.write(Terminal::reset());
         term_.write("  ");
         if (!selected_yes) {
+            term_.write(accent_fg());
             term_.write(Terminal::bold());
             term_.write(Terminal::reverse_video());
         } else {
             term_.write(Terminal::dim());
         }
-        term_.write("  No  ");
+        term_.write("  no  ");
         term_.write(Terminal::reset());
         term_.hide_cursor();
         term_.flush();
@@ -548,7 +553,7 @@ int UI::draw_selection_dialog(const std::string& title, const std::vector<std::s
 
         term_.move_to(start_row + 1, start_col + 2);
         term_.write(Terminal::bold());
-        term_.write(color_fg(C::Yellow));
+        term_.write(accent_fg());
         term_.write_truncated(title, w - 4);
         term_.write(Terminal::reset());
 
@@ -566,6 +571,7 @@ int UI::draw_selection_dialog(const std::string& title, const std::vector<std::s
             term_.move_to(row, start_col + 2);
 
             if (idx == sel) {
+                term_.write(accent_fg());
                 term_.write(Terminal::reverse_video());
                 term_.write(Terminal::bold());
             }
@@ -642,7 +648,7 @@ void UI::draw_message(const std::string& title, const std::string& msg) {
 
     term_.move_to(start_row + 1, start_col + 2);
     term_.write(Terminal::bold());
-    term_.write(color_fg(C::Yellow));
+    term_.write(accent_fg());
     term_.write_truncated(title, w - 4);
     term_.write(Terminal::reset());
 
