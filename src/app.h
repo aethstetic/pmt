@@ -81,6 +81,7 @@ private:
 
     void refresh_packages();
     void update_display_list();
+    void apply_sort();
     void set_status(const std::string& msg);
     void drain_input();
 

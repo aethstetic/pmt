@@ -12,6 +12,13 @@ enum class Focus {
     DetailPane,
 };
 
+enum class SortMode {
+    Name,
+    InstallSize,
+    Date,
+    Votes,
+};
+
 struct ProgressInfo {
     std::string label;
     double fraction = 0.0;
@@ -37,6 +44,8 @@ public:
     ProgressInfo progress;
     bool color_disabled = false;
     std::string accent_code;
+    SortMode sort_mode = SortMode::Name;
+    bool sort_descending = false;
 
     int list_width() const;
     int detail_width() const;

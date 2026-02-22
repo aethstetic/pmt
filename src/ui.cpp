@@ -405,7 +405,7 @@ void UI::draw_status_bar(const std::vector<PackageInfo>& packages) {
     } else {
         static constexpr struct { const char* key; const char* label; } hints[] = {
             {"[i]", "nstall "},  {"[r]", "emove "},  {"[d]", "owngrade "},
-            {"[u]", "pgrade "}, {"[a]", "ur upgrade "}, {"[c]", "ache clear "}, {"[/]", "search "}, {"[q]", "uit"},
+            {"[u]", "pgrade "}, {"[s]", "ort "}, {"[a]", "ur upgrade "}, {"[c]", "ache clear "}, {"[/]", "search "}, {"[q]", "uit"},
         };
         term_.write(" ");
         for (const auto& h : hints) {
@@ -551,13 +551,14 @@ int UI::draw_selection_dialog(const std::string& title, const std::vector<std::s
             }
         }
 
-        term_.move_to(start_row + 1, start_col + 2);
+        term_.move_to(start_row + 1, start_col + 3);
         term_.write(Terminal::bold());
         term_.write(accent_fg());
-        term_.write_truncated(title, w - 4);
+        term_.write_truncated(title, w - 5);
         term_.write(Terminal::reset());
 
         term_.move_to(start_row + 2, start_col + 1);
+        term_.write(accent_fg());
         term_.write(Terminal::dim());
         for (int c = 1; c < w - 1; ++c) term_.write("\u2500");
         term_.write(Terminal::reset());
@@ -566,31 +567,38 @@ int UI::draw_selection_dialog(const std::string& title, const std::vector<std::s
             int idx = scroll + i;
             if (idx >= static_cast<int>(options.size())) break;
             int row = start_row + 3 + i;
-            term_.move_to(row, start_col + 2);
-            term_.write(std::string(w - 4, ' '));
-            term_.move_to(row, start_col + 2);
+            term_.move_to(row, start_col + 1);
+            term_.write(std::string(w - 2, ' '));
 
             if (idx == sel) {
+                term_.move_to(row, start_col + 1);
                 term_.write(accent_fg());
-                term_.write(Terminal::reverse_video());
                 term_.write(Terminal::bold());
+                term_.write(">");
+                term_.move_to(row, start_col + 2);
+                term_.write(accent_fg());
+                term_.write(Terminal::bold());
+                term_.write(Terminal::reverse_video());
+                std::string padded = " " + options[idx];
+                while (static_cast<int>(padded.size()) < w - 3) padded += ' ';
+                term_.write_truncated(padded, w - 3);
+            } else {
+                term_.move_to(row, start_col + 3);
+                term_.write(accent_fg());
+                term_.write_truncated(options[idx], w - 5);
             }
-
-            std::string label = (idx == sel ? "> " : "  ");
-            label += options[idx];
-            term_.write_truncated(label, w - 4);
             term_.write(Terminal::reset());
         }
 
         if (scroll > 0) {
             term_.move_to(start_row + 3, start_col + w - 3);
-            term_.write(Terminal::dim());
+            term_.write(accent_fg());
             term_.write("\u25b2");
             term_.write(Terminal::reset());
         }
         if (scroll + max_items < static_cast<int>(options.size())) {
             term_.move_to(start_row + 2 + max_items, start_col + w - 3);
-            term_.write(Terminal::dim());
+            term_.write(accent_fg());
             term_.write("\u25bc");
             term_.write(Terminal::reset());
         }

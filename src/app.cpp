@@ -206,6 +206,7 @@ void App::poll_search_results() {
             repo_results_ = std::move(search_results_buf_);
             if (!ui_.show_aur) {
                 packages_ = repo_results_;
+                apply_sort();
                 ui_.selected = 0;
                 ui_.list_scroll = 0;
                 ui_.detail_scroll = 0;
@@ -224,6 +225,7 @@ void App::poll_search_results() {
                 alpm_.mark_installed(pkg);
             if (ui_.show_aur) {
                 packages_ = aur_results_;
+                apply_sort();
                 ui_.selected = 0;
                 ui_.list_scroll = 0;
                 ui_.detail_scroll = 0;
@@ -388,6 +390,28 @@ void App::handle_list_key(const KeyEvent& ev) {
                 case 'c':
                     do_clear_cache();
                     break;
+                case 's': {
+                    std::vector<std::string> opts = {
+                        "Name",
+                        "Install Size",
+                        "Date",
+                        "Votes",
+                    };
+                    int choice = ui_.draw_selection_dialog("Sort by", opts);
+                    if (choice >= 0) {
+                        auto mode = static_cast<SortMode>(choice);
+                        if (ui_.sort_mode == mode) {
+                            ui_.sort_descending = !ui_.sort_descending;
+                        } else {
+                            ui_.sort_mode = mode;
+                            ui_.sort_descending = false;
+                        }
+                        apply_sort();
+                        ui_.selected = 0;
+                        ui_.list_scroll = 0;
+                    }
+                    break;
+                }
                 default:
                     break;
             }
@@ -807,8 +831,7 @@ void App::do_filter_installed() {
 
     if (ui_.filter_installed) {
         packages_ = alpm_.list_installed();
-        std::sort(packages_.begin(), packages_.end(),
-                  [](const PackageInfo& a, const PackageInfo& b) { return a.name < b.name; });
+        apply_sort();
     } else {
         if (!ui_.search_text.empty()) {
             start_search(ui_.search_text);
@@ -829,6 +852,7 @@ void App::do_filter_updates() {
 
     if (ui_.filter_updates) {
         packages_ = alpm_.list_updates();
+        apply_sort();
         if (packages_.empty()) {
             set_status("No updates available");
         }
@@ -1485,10 +1509,30 @@ void App::do_aur_upgrade() {
     }
 }
 
+void App::apply_sort() {
+    bool desc = ui_.sort_descending;
+    std::sort(packages_.begin(), packages_.end(),
+              [&](const PackageInfo& a, const PackageInfo& b) {
+        bool result;
+        switch (ui_.sort_mode) {
+            case SortMode::Name:
+                result = a.name < b.name; break;
+            case SortMode::InstallSize:
+                result = a.install_size > b.install_size; break;
+            case SortMode::Date:
+                result = a.build_date > b.build_date; break;
+            case SortMode::Votes:
+                result = a.aur_votes > b.aur_votes; break;
+            default:
+                result = a.name < b.name; break;
+        }
+        return desc ? !result : result;
+    });
+}
+
 void App::refresh_packages() {
     packages_ = alpm_.list_installed();
-    std::sort(packages_.begin(), packages_.end(),
-              [](const PackageInfo& a, const PackageInfo& b) { return a.name < b.name; });
+    apply_sort();
     repo_results_.clear();
     aur_results_.clear();
 }
@@ -1499,6 +1543,7 @@ void App::update_display_list() {
     } else {
         packages_ = repo_results_;
     }
+    apply_sort();
     ui_.selected = 0;
     ui_.list_scroll = 0;
     ui_.detail_scroll = 0;
